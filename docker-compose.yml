@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  mysql:
+    restart: unless-stopped
+    image: mysql:8.0
+    container_name: semaphore_mysql
+    hostname: mysql
+    volumes:
+      - semaphore_mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: ${MYSQL_RANDOM_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  semaphore:
+    restart: unless-stopped
+    image: semaphoreui/semaphore:latest
+    container_name: semaphore
+    ports:
+      - "3000:3000"
+    environment:
+      SEMAPHORE_DB_USER: ${SEMAPHORE_DB_USER}
+      SEMAPHORE_DB_PASS: ${SEMAPHORE_DB_PASS}
+      SEMAPHORE_DB_HOST: mysql
+      SEMAPHORE_DB_PORT: 3306
+      SEMAPHORE_DB_DIALECT: mysql
+      SEMAPHORE_DB: ${SEMAPHORE_DB}
+      SEMAPHORE_PLAYBOOK_PATH: ${SEMAPHORE_PLAYBOOK_PATH}
+      SEMAPHORE_ADMIN_PASSWORD: ${SEMAPHORE_ADMIN_PASSWORD}
+      SEMAPHORE_ADMIN_NAME: ${SEMAPHORE_ADMIN_NAME}
+      SEMAPHORE_ADMIN_EMAIL: ${SEMAPHORE_ADMIN_EMAIL}
+      SEMAPHORE_ADMIN: ${SEMAPHORE_ADMIN}
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: ${SEMAPHORE_ACCESS_KEY_ENCRYPTION}
+      TZ: ${TZ}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - semaphore_data:/data
+
+  ansible:
+    image: alpine:latest
+    container_name: ansible
+    volumes:
+      - ./ansible:/etc/ansible
+    working_dir: /etc/ansible
+    command: >
+      sh -c "apk add --no-cache python3 py3-pip openssh-client git &&
+             python3 -m venv /opt/venv &&
+             . /opt/venv/bin/activate &&
+             pip install ansible &&
+             sleep infinity"
+    tty: true
+    networks:
+      - semaphore_network
+
+volumes:
+  semaphore_mysql_data:
+  semaphore_data:
+
+networks:
+  semaphore_network:
+    driver: bridge
