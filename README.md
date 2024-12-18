@@ -1,4 +1,4 @@
-# Project Name
+# Ansible Semaphore Docker Compose
 
 Ce projet utilise `docker-compose` pour déployer Semaphore (un gestionnaire de flux de travail pour Ansible), MySQL, et Ansible. Semaphore gère les exécutions d'Ansible, les workflows et les tâches automatiques, tandis que MySQL sert de base de données pour Semaphore. Ansible est utilisé pour déployer les playbooks Ansible dans un environnement isolé.
 
