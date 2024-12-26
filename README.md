@@ -37,5 +37,5 @@ Avant de commencer, assurez-vous d'avoir installé `docker` et `docker-compose` 
    SEMAPHORE_ADMIN_NAME=admin
    SEMAPHORE_ADMIN_EMAIL=admin@localhost
    SEMAPHORE_ADMIN=admin
-   SEMAPHORE_ACCESS_KEY_ENCRYPTION=gs72mPntFATGJs9qK0pQ0rKtfidlexiMjYCH9gWKhTU=
+   SEMAPHORE_ACCESS_KEY_ENCRYPTION=REqhxqSSCUyf/IvyadSWIVA9aCMSo/aTHe1t9qfNmmc=
    TZ=UTC
